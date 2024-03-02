@@ -1,17 +1,40 @@
-// Pseudo-code for loading and displaying map and facilities
-d3.json("path/to/us-map.json").then(function(usMapData) {
-    // Initialize map using D3
-    // This would involve creating an SVG element inside the #map div and drawing the map
-});
+// Set the dimensions and margins of the map
+const width = 960;
+const height = 600;
 
-// Pseudo-code to load facilities data
-d3.csv("path/to/facilities.csv").then(function(facilitiesData) {
-    // Process and display facilities on the map
-    // Each facility could be represented by an SVG shape with event listeners for hover and click
-    // On hover, display basic info (name, division, state)
-    // On click, display detailed info in the #facility-details div
-});
+// Append SVG map container in the body of the page
+const svg = d3.select("#map");
 
-// Implement zoom and filter functionality
-// Zoom could be achieved using d3.zoom()
-// Filtering could involve redrawing the map with a subset of the facilities based on the selected criteria
+// Define map projection
+const projection = d3.geoMercator()
+    .scale(100)
+    .translate([width / 2, height / 2]);
+
+// Define path generator
+const path = d3.geoPath().projection(projection);
+
+// Load and display the world or specific country map
+// For this example, we'll assume you have a GeoJSON file named "map.geojson"
+d3.json("map.geojson").then(function(geojson) {
+    svg.selectAll("path")
+        .data(geojson.features)
+        .enter().append("path")
+        .attr("d", path)
+        .attr("fill", "lightgray")
+        .attr("stroke", "white");
+
+    // Example bounding box [minX, minY, maxX, maxY]
+    const bbox = [/* Define your bounding box here */];
+
+    // Zoom to bounding box function
+    function zoomToBoundingBox(bbox) {
+        const [[x0, y0], [x1, y1]] = [projection([bbox[0], bbox[3]]), projection([bbox[2], bbox[1]])];
+        const scale = 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height);
+        const translate = [(width - scale * (x0 + x1)) / 2, (height - scale * (y0 + y1)) / 2];
+
+        svg.transition().duration(750).attr("transform", `translate(${translate})scale(${scale})`);
+    }
+
+    // Call the zoom function (you can replace this with an event listener or a specific condition)
+    zoomToBoundingBox(bbox);
+});
