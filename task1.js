@@ -1,3 +1,5 @@
+//code for map in prompt folder
+
 chart = {
     const width = 975;
     const height = 610;
@@ -68,4 +70,4 @@ chart = {
     }
   
     return svg.node();
-  }
+}
