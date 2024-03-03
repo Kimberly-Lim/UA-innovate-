@@ -1,0 +1,14 @@
+#map {
+    width: 75%;
+    height: 600px;
+    float: left;
+}
+
+#facility-details {
+    width: 25%;
+    float: right;
+    height: 600px;
+    overflow-y: scroll;
+}
+
+/* Additional styling can be added as needed */
