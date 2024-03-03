@@ -45,44 +45,39 @@
         .then(csvText => {
             const lines = csvText.split('\n').slice(1); // Skip header
             lines.forEach(line => {
-                const [latitude, longitude, name, desc, color, source, precision, timezone] = line.split(',');
+                const [latitude, longitude, name, desc, color, source, precision, timeZone] = line.split(',');
+
+                console.log(`Processing line for timezone: ${timeZone}`); // Log timezone being processed
+
                 if (!isNaN(latitude) && !isNaN(longitude)) {
-                    const marker = L.marker([parseFloat(latitude), parseFloat(longitude)]);
-                    const tooltipContent = `${name}, ${desc}, ${color}, ${source}, ${precision}, ${timezone}`; // Customize based on your CSV structure
-                    marker.bindTooltip(tooltipContent, {direction: 'top', opacity: 0.9}); // Tooltip shows only on hover
-                    markers.addLayer(marker); // Add marker to the cluster group
+                    const marker = L.marker([parseFloat(latitude), parseFloat(longitude)]).bindTooltip(`${name}, ${desc}, ${timeZone}`, {direction: 'top', opacity: 0.9});
+                    allMarkers.push({marker, timeZone: timeZone.trim()}); // Add marker and its timezone for filtering
                 }
             });
-            map.addLayer(markers); // Add the cluster group to the map
+            applyFilter(); // Initially apply filter to show all markers
         });
 
-    function applyFilter() {
+        function applyFilter() {
         var timeZoneSelected = document.getElementById('TimeZoneFilter').value;
+        
+        console.log(`Filtering markers for timezone: ${timeZoneSelected}`); // Log the selected filter value
 
-        markers.clearLayers(); // clear existing markers
+        markers.clearLayers(); // Clear existing markers from the cluster group
 
-        // Re-filter the markers based on the selected timezone
-        fetch('Coordinates_CSV.csv')
-            .then(response => response.text())
-            .then(csvText => {
-                const lines = csvText.split('\n').slice(1); // Skip header
-                lines.forEach(line => {
-                    const [latitude, longitude, name, desc, color, source, precision, timezone] = line.split(',');
-                    if (!isNaN(latitude) && !isNaN(longitude)) {
-                        if (timeZoneSelected === 'All' || timezone.trim().toLowerCase() === timeZoneSelected) {
-                            const marker = L.marker([parseFloat(latitude), parseFloat(longitude)]);
-                            const tooltipContent = `${name}, ${desc}, ${color}, ${source}, ${precision}, ${timezone}`; // Tooltip content
-                            marker.bindTooltip(tooltipContent, {direction: 'top', opacity: 0.9});
-                            markers.addLayer(marker); // Add marker to the cluster group
-                        }
-                    }
-                });
-                map.addLayer(markers); // Re-add the cluster group to the map with filtered markers
-            });
+        allMarkers.forEach(({marker, timeZone}) => {
+            
+            console.log(`Checking marker with timezone: ${timeZone} against filter: ${timeZoneSelected}`); // Log comparison
+            
+            if (timeZoneSelected === 'All' || timeZone === timeZoneSelected) {
+                markers.addLayer(marker); // Add marker to the cluster group if it matches the filter
+            }
+        });
+
+        map.addLayer(markers); // Add the cluster group to the map
     }
 
-    // Listen for changes on the timezone filter and apply filter
-    document.addEventListener('DOMContentLoaded', applyFilter); // Apply filter once the DOM is fully loaded
+
+    // Event listener for the timezone filter dropdown change
     document.getElementById('TimeZoneFilter').addEventListener('change', applyFilter);
 </script>
 </body>
