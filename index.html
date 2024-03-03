@@ -8,7 +8,7 @@
 <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
 
 <!-- Create an element where the map will take place -->
-<svg id="my_dataviz" width="440" height="300"></svg>
+<svg id="my_dataviz" width="1840" height="800"></svg>
 
 
 <script>
@@ -20,8 +20,8 @@ var svg = d3.select("svg"),
 
 // Map and projection
 var projection = d3.geoMercator()
-    .scale(350) // This is the zoom
-    .translate([850, 440]); // You have to play with these values to center your map
+    .scale(1000) // This is the zoom
+    .translate([2550, 1240]); // (centering)left: left/right right: up/down
 
 // Path generator
 var path = d3.geoPath()
