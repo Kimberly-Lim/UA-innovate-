@@ -51,6 +51,7 @@ function _chart(d3,topojson,us)
       d3.zoomIdentity,
       d3.zoomTransform(svg.node()).invert([width / 2, height / 2])
     );
+    
   }
 
   function clicked(event, d) {
@@ -65,7 +66,9 @@ function _chart(d3,topojson,us)
         .scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)))
         .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
       d3.pointer(event, svg.node())
+
     );
+    
   }
 
   function zoomed(event) {
@@ -78,9 +81,25 @@ function _chart(d3,topojson,us)
 }
 
 
+//function to open the side navigation 
+// function openNav() {
+//   document.getElementById("mySidenav").style.width = "250px"; //MAY HAVE TO ADJUST THIS VALUE
+
+// }
+//function to close the side navigation
+// function closeNav() {
+//   document.getElementById("mySidenav").style.width = "0";
+// }
+
+//event listener to see if a state has been clicked
+//document.getElementById("states").addEventListener("click", openNav);
+
 function _us(FileAttachment){return(
 FileAttachment("states-albers-10m.json").json()
+//FileAttachment("75faaaca1f1a4f415145b9db520349a3a0b93a53c1071346a30e6824586a7c251f45367d9262ed148b7a2b5c2694aa7703f3ac88051abc65066fd0074fdf9c9e.json").json()
 )}
+
+
 
 export default function define(runtime, observer) {
   const main = runtime.module();
@@ -94,3 +113,7 @@ export default function define(runtime, observer) {
   main.variable(observer("us")).define("us", ["FileAttachment"], _us);
   return main;
 }
+
+
+
+

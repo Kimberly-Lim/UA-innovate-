@@ -1,8 +1,29 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<head>
 <h1>HCA Location Graph</h1>
-<!--<link rel="stylesheet" type="text/css" href="./inspector.css"> -->
 <body>
+
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times; </a>
+        <a href="#">Name</a>
+        <a href="#">COID</a>
+        <a href="#">Clients</a>
+        <a href="#">Contact</a>
+      </div>
+      
+      
+      <span onclick="openNav()">open</span>
+      
+      
+      <div id="main">
+      <!--add main content here-->
+      </div>
+      
+
+</body>
+
+</head>
 <script type="module">
 
 import define from "./index.js";
@@ -12,3 +33,4 @@ const runtime = new Runtime();
 const main = runtime.module(define, Inspector.into(document.body));
 
 </script>
+
