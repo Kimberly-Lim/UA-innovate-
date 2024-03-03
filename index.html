@@ -1,5 +1,6 @@
 <!-- Code from d3-graph-gallery.com -->
 <!DOCTYPE html>
+
 <meta charset="utf-8">
 
 <!-- Load d3.js -->
@@ -8,8 +9,8 @@
 <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
 
 <!-- Create an element where the map will take place -->
-<svg id="my_dataviz" width="440" height="300"></svg>
-
+<svg id="my_dataviz" width="1840" height="800"></svg>
+<script src="script.js"></script>
 
 <script>
 
@@ -20,8 +21,8 @@ var svg = d3.select("svg"),
 
 // Map and projection
 var projection = d3.geoMercator()
-    .scale(350) // This is the zoom
-    .translate([850, 440]); // You have to play with these values to center your map
+    .scale(1000) // This is the zoom
+    .translate([2550, 1240]); // (centering)left: left/right right: up/down
 
 // Path generator
 var path = d3.geoPath()
@@ -55,4 +56,16 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/u
         .style("fill", "white")
 })
 
+var zoom = d3.behavior.zoom()
+    .scaleExtent([1, 8]);
+
+   paths.on('click', function(event, d) {
+       // Define zoom transformation, e.g., scale by 2 and center on the clicked element
+       var transform = d3.zoomIdentity.translate(width / 2, height / 2).scale(2).translate(-d.x, -d.y);
+       svg.transition().duration(750).call(zoom.transform, transform);
+   });
+
+svg.call(zoom);
+
 </script>
+</html>
