@@ -17,18 +17,22 @@
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Assuming "Coordinates_CSV.csv" is in the same directory as your index.html
         fetch('Coordinates_CSV.csv')
-            .then(response => response.text())
-            .then(csvText => {
-                const lines = csvText.split('\n');
-                lines.forEach(line => {
-                    const [latitude, longitude] = line.split(',').map(parseFloat);
-                    if (!isNaN(latitude) && !isNaN(longitude)) {
-                        L.marker([latitude, longitude]).addTo(map);
-                    }
-                });
-            });
+    .then(response => response.text())
+    .then(csvText => {
+        const lines = csvText.split('\n');
+        lines.forEach(line => {
+            const [latitude, longitude, ...info] = line.split(',');
+            if (!isNaN(latitude) && !isNaN(longitude)) {
+                const marker = L.marker([parseFloat(latitude), parseFloat(longitude)]).addTo(map);
+                
+                // Assuming 'info' contains the information you want to show in the tooltip
+                const tooltipContent = info.join(', '); // Customize this based on your CSV structure
+                marker.bindTooltip(tooltipContent, {direction: 'top', opacity: 0.9}); // Tooltip shows only on hover
+            }
+        });
+    });
+
     </script>
 </body>
 </html>
