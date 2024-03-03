@@ -13,17 +13,18 @@
     <h1>HCA Location Graph</h1>
     
     <!-- Filter UI -->
-    <select id="demographicFilter">
-        <option value="All">All</option>
-        <option value="Urban">Urban</option>
-        <option value="Suburban">Suburban</option>
-        <option value="Rural">Rural</option>
+    <select id="TimeZoneFilter">
+        <option value="All">All Timezones</option>
+        <option value="est">East</option>
+        <option value="pst">Pacific</option>
+        <option value="cst">Central</option>
+        <option value="mst">Mountain</option>
     </select>
 
     <select id="facilityFilter">
         <option value="All">All Facilities</option>
         <option value="Hospital">Hospital</option>
-        <option value="Medical Center">Medical Center</option>
+        <option value="Medi Tech">Medi Tech</option>
     </select>
     
 
@@ -37,22 +38,52 @@
         }).addTo(map);
 
         var markers = L.markerClusterGroup();
+        var allMarkers = []; // Store all markers with their timezone for filtering
 
+        fetch('Coordinates_CSV.csv')
+        .then(response => response.text())
+        .then(csvText => {
+            const lines = csvText.split('\n').slice(1); // Skip header
+            lines.forEach(line => {
+                const [latitude, longitude, name, desc, color, source, precision, timezone] = line.split(',');
+                if (!isNaN(latitude) && !isNaN(longitude)) {
+                    const marker = L.marker([parseFloat(latitude), parseFloat(longitude)]);
+                    const tooltipContent = `${name}, ${desc}, ${color}, ${source}, ${precision}, ${timezone}`; // Customize based on your CSV structure
+                    marker.bindTooltip(tooltipContent, {direction: 'top', opacity: 0.9}); // Tooltip shows only on hover
+                    markers.addLayer(marker); // Add marker to the cluster group
+                }
+            });
+            map.addLayer(markers); // Add the cluster group to the map
+        });
+
+    function applyFilter() {
+        var timeZoneSelected = document.getElementById('TimeZoneFilter').value;
+
+        markers.clearLayers(); // clear existing markers
+
+        // Re-filter the markers based on the selected timezone
         fetch('Coordinates_CSV.csv')
             .then(response => response.text())
             .then(csvText => {
-                const lines = csvText.split('\n');
+                const lines = csvText.split('\n').slice(1); // Skip header
                 lines.forEach(line => {
-                    const [latitude, longitude, ...info] = line.split(',');
+                    const [latitude, longitude, name, desc, color, source, precision, timezone] = line.split(',');
                     if (!isNaN(latitude) && !isNaN(longitude)) {
-                        const marker = L.marker([parseFloat(latitude), parseFloat(longitude)]);
-                        const tooltipContent = info.join(', '); // Customize based on your CSV structure
-                        marker.bindTooltip(tooltipContent, {direction: 'top', opacity: 0.9}); // Tooltip shows only on hover
-                        markers.addLayer(marker); // Add marker to the cluster group instead of directly to map
+                        if (timeZoneSelected === 'All' || timezone.trim().toLowerCase() === timeZoneSelected) {
+                            const marker = L.marker([parseFloat(latitude), parseFloat(longitude)]);
+                            const tooltipContent = `${name}, ${desc}, ${color}, ${source}, ${precision}, ${timezone}`; // Tooltip content
+                            marker.bindTooltip(tooltipContent, {direction: 'top', opacity: 0.9});
+                            markers.addLayer(marker); // Add marker to the cluster group
+                        }
                     }
                 });
-                map.addLayer(markers); // Add the cluster group to the map after all markers are added
+                map.addLayer(markers); // Re-add the cluster group to the map with filtered markers
             });
-    </script>
+    }
+
+    // Listen for changes on the timezone filter and apply filter
+    document.addEventListener('DOMContentLoaded', applyFilter); // Apply filter once the DOM is fully loaded
+    document.getElementById('TimeZoneFilter').addEventListener('change', applyFilter);
+</script>
 </body>
 </html>
