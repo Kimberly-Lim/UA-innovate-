@@ -1,5 +1,6 @@
 <!-- Code from d3-graph-gallery.com -->
 <!DOCTYPE html>
+
 <meta charset="utf-8">
 
 <!-- Load d3.js -->
@@ -9,7 +10,7 @@
 
 <!-- Create an element where the map will take place -->
 <svg id="my_dataviz" width="1840" height="800"></svg>
-
+<script src="script.js"></script>
 
 <script>
 
@@ -55,4 +56,16 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/u
         .style("fill", "white")
 })
 
+var zoom = d3.behavior.zoom()
+    .scaleExtent([1, 8]);
+
+   paths.on('click', function(event, d) {
+       // Define zoom transformation, e.g., scale by 2 and center on the clicked element
+       var transform = d3.zoomIdentity.translate(width / 2, height / 2).scale(2).translate(-d.x, -d.y);
+       svg.transition().duration(750).call(zoom.transform, transform);
+   });
+
+svg.call(zoom);
+
 </script>
+</html>
