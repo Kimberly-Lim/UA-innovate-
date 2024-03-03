@@ -1,36 +1,34 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
+<html>
 <head>
-<h1>HCA Location Graph</h1>
-<body>
-
-    <div id="mySidenav" class="sidenav">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times; </a>
-        <a href="#">Name</a>
-        <a href="#">COID</a>
-        <a href="#">Clients</a>
-        <a href="#">Contact</a>
-      </div>
-      
-      
-      <span onclick="openNav()">open</span>
-      
-      
-      <div id="main">
-      <!--add main content here-->
-      </div>
-      
-
-</body>
-
+    <meta charset="utf-8">
+    <title>HCA Location Graph</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
 </head>
-<script type="module">
+<body>
+    <h1>HCA Location Graph</h1>
+    <div id="map" style="height: 500px;"></div>
 
-import define from "./index.js";
-import {Runtime, Library, Inspector} from "./runtime.js";
+    <script>
+        var map = L.map('map').setView([37.8, -96.9], 4);
 
-const runtime = new Runtime();
-const main = runtime.module(define, Inspector.into(document.body));
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-</script>
-
+        // Assuming "Coordinates_CSV.csv" is in the same directory as your index.html
+        fetch('Coordinates_CSV.csv')
+            .then(response => response.text())
+            .then(csvText => {
+                const lines = csvText.split('\n');
+                lines.forEach(line => {
+                    const [latitude, longitude] = line.split(',').map(parseFloat);
+                    if (!isNaN(latitude) && !isNaN(longitude)) {
+                        L.marker([latitude, longitude]).addTo(map);
+                    }
+                });
+            });
+    </script>
+</body>
+</html>
