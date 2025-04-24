@@ -42,6 +42,31 @@ function _chart(d3,topojson,us)
       .attr("stroke-linejoin", "round")
       .attr("d", path(topojson.mesh(us, us.objects.states, (a, b) => a !== b)));
 
+  // Load and display coordinates
+  d3.csv("Coordinates_CSV.csv").then(data => {
+    const points = g.append("g")
+      .selectAll("circle")
+      .data(data)
+      .join("circle")
+      .attr("cx", d => {
+        const projection = d3.geoAlbersUsa();
+        const coords = projection([+d.longitude, +d.latitude]);
+        return coords ? coords[0] : null;
+      })
+      .attr("cy", d => {
+        const projection = d3.geoAlbersUsa();
+        const coords = projection([+d.longitude, +d.latitude]);
+        return coords ? coords[1] : null;
+      })
+      .attr("r", 3)
+      .attr("fill", "red")
+      .attr("stroke", "white")
+      .attr("stroke-width", 1);
+
+    points.append("title")
+      .text(d => `${d.name}\n${d.desc}`);
+  });
+
   svg.call(zoom);
 
   function reset() {
